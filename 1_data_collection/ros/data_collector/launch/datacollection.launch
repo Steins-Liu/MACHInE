@@ -1,0 +1,33 @@
+
+<launch>
+    
+    <!-- IMU -->
+    <arg name="razor_config_file" default="$(find razor_imu_9dof)/config/razor.yaml"/>
+    <node pkg="razor_imu_9dof" type="imu_node.py" name="imu_node" output="screen" launch-prefix= "nice -n 10">
+    <rosparam file="$(arg razor_config_file)" command="load"/>
+    </node>
+
+    <!-- Camera Node -->
+    <node name="rpi_cam_node" pkg="rpi_cam" type="imagestreamer.py" launch-prefix= "nice -n 0 taskset -c 1">
+    </node>
+    
+    <!-- Wheel Encoder -->
+    <node pkg="wheel_encoder" type= "wheel_encoder.py" name="wheel_encoder" launch-prefix= "">
+    </node>
+	
+    <!-- Shaft Encoder -->
+    <node pkg="shaft_encoder" type= "shaft_encoder.py" name="shaft_encoder" launch-prefix= "">
+    </node>
+
+    <!-- SteeringWheel: Throttle & Steering -->
+     <node pkg="controller"
+        type="joy_node_controller"
+        name="joy_node_controller"
+        respawn="false" launch-prefix= "nice -n 10">
+    <param name="deadzone" value="0" />
+    <param name="autorepeat_rate" value="100"/>
+    <param name="coalesce_interval" value="0.005"/>  
+    </node>
+
+
+</launch>
